@@ -7,6 +7,10 @@ from sorl.thumbnail import ImageField as SorlImageField
 
 from .utils.urls import is_absolute_url
 
+import os
+from uuid import uuid4
+
+
 class SlugURLValidator(object):
 	message = _('Enter a valid value.')
 	code = 'invalid'
@@ -28,7 +32,22 @@ class SlugURLField(models.CharField):
 
 
 class ImageField(SorlImageField):
-	pass
+	def __init__(self, verbose_name=None, name=None, upload_to='', storage=None, **kwargs):
+		if not callable(upload_to):
+			upload_to = ImageField.path_and_rename(upload_to)
+		super(ImageField, self).__init__(verbose_name, name, upload_to, storage, **kwargs)
+
+	@staticmethod
+	def path_and_rename(path):
+		def wrapper(instance, filename):
+			ext = filename.split('.')[-1]
+			
+			# set filename as random string
+			filename = '{}.{}'.format(uuid4().hex, ext)
+
+			# return the whole path to the file
+			return os.path.join(path, instance.__class__.__name__.lower(), filename)
+		return wrapper
 
 
 class HiddenFormField(forms.IntegerField):

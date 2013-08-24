@@ -92,7 +92,7 @@ class Orderable(models.Model):
 
 	class Meta:
 		abstract = True
-		ordering = ['order',]	
+		ordering = ['order',]
 
 
 class OrderableMPTTM(Orderable):
@@ -138,7 +138,7 @@ class Promotable(Publishable):
 	promoted = models.BooleanField(_('promoted'))
 
 
-class MultilingualTreeManager(TreeManager, BaseManager):
+class MultilingualTreeManager(TreeManager, PublishableManager):
 	pass
 
 
@@ -152,16 +152,18 @@ class TranslatableMPTTModel(TranslatableModel, MPTTModel):
 
 
 class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
+	name = models.CharField(_('name'), max_length=200)
 	slug = SlugURLField(verbose_name=_('slug'), max_length=200, blank=True)
 	url = models.CharField(verbose_name=_('url'), max_length=200, unique=True, editable=False, db_index=True)
 	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 
 	translations = TranslatedFields(
 		title = models.CharField(_('title'), max_length=80),
-		description = models.CharField(_('description'), max_length=200, blank=True)
+		description = models.TextField(_('description'), max_length=200, blank=True)
 	)
 
-	#objects = TranslationManager()
+	def short_title(self):
+	    return self.name
 
 	def title_with_spacer(self, spacer=u'...'):
 		return (spacer * self.level) + u' ' + self.slug
@@ -194,13 +196,6 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 					p.save()
 			except Page.DoesNotExist:
 				pass
-
-	@property
-	def name(self):
-		try:
-			return self.title
-		except Page.DoesNotExist:
-			return self.slug
 
 	def __unicode__(self):
 		return u'%s -- %s' % (self.url, self.title)

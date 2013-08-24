@@ -11,6 +11,32 @@ from sorl.thumbnail.admin import AdminImageMixin
 
 from .forms import PageForm
 from .models import Menu, MenuTranslation, Template, Page, PageTranslation
+from .managers import PublishableManager
+
+
+def make_published(modeladmin, request, queryset):
+	queryset.update(status=PublishableManager.STATUS_PUBLISHED)
+make_published.short_description = _('Mark selected as Published')
+
+
+def make_unpublished(modeladmin, request, queryset):
+	queryset.update(status=PublishableManager.STATUS_DRAFT)
+make_unpublished.short_description = _('Mark selected as Unpublished (Draft)')
+
+
+def make_promoted(modeladmin, request, queryset):
+	queryset.update(promoted=True)
+make_promoted.short_description = _('Mark selected as Promoted')
+
+
+def make_unpromoted(modeladmin, request, queryset):
+	queryset.update(promoted=True)
+make_unpromoted.short_description = _('Mark selected as Unpromoted')
+
+
+actions_published = [make_published, make_unpublished]
+actions_promoted = actions_published + [make_promoted, make_unpromoted]
+
 
 PUBLISHABLE_OPTIONS = (
 	_('Publishing Options'), {
@@ -46,22 +72,16 @@ class MenuAdmin(MPTTTreeModelAdmin):
 	inlines = [MenuTranslationInline,]
 
 	fieldsets = (
-		(None, {'fields': ('slug', 'parent', )}),
+		(None, {'fields': ('name', 'slug', 'parent', )}),
 		PUBLISHABLE_OPTIONS,
 	)
-	list_display = ('name', 'url', 'creation_user', 'lastchange_date')
+	list_display = ('name', 'url', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['slug', 'url']
-
-	#exclude = ('url',)
-	#prepopulated_fields = {'slug':('title',),}
-	#list_editable = ('order',)
 	sortable = 'order'
-
 	mptt_level_indent = 20
-
-	#def get_changelist_form(self, request, **kwargs):
-	#	kwargs.setdefault('form', OrderableMenuForm)
-	#	return super(MenuAdmin, self).get_changelist_form(request, **kwargs)
+	#indented_short_title = _('name')
+	prepopulated_fields = {'slug':('name',)}
+	actions = actions_published
 
 admin.site.register(Menu, MenuAdmin)
 
@@ -112,11 +132,9 @@ class PageAdmin(ModelAdmin):
 		(None, {'fields': ('name', 'menu', 'is_relative', 'template_name')}),
 		PUBLISHABLE_OPTIONS,
 	)
-	list_display = ('name', 'url', 'template_name', 'creation_user', 'lastchange_date')
+	list_display = ('name', 'url', 'template_name', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['name', 'url']
-	#list_filter = ('sites',)
-	#filter_horizontal = ('sites',)
-
+	actions = actions_published
 	form = PageForm
 
 	def formfield_for_dbfield(self, db_field, **kwargs):

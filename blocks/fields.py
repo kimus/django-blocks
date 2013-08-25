@@ -46,7 +46,7 @@ class ImageField(SorlImageField):
 			filename = '{}.{}'.format(uuid4().hex, ext)
 
 			# return the whole path to the file
-			return os.path.join(path, instance.__class__.__name__.lower(), filename)
+			return os.path.join('uploads', path, instance.__class__.__name__.lower(), filename)
 		return wrapper
 
 

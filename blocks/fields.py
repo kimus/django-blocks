@@ -12,7 +12,7 @@ from uuid import uuid4
 
 
 class SlugURLValidator(object):
-	message = _('Enter a valid value.')
+	message = _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
 	code = 'invalid'
 
 	def __init__(self, arg1):
@@ -28,14 +28,24 @@ class SlugURLValidator(object):
 
 
 class SlugURLField(models.CharField):
-	default_validators = [SlugURLValidator]
+	default_validators = [SlugURLValidator(None)]
+
+	def to_python(self, value):
+		value = super(SlugURLField, self).to_python(value)
+		if value is None:
+			return value
+		if not is_absolute_url(value):
+			value = value.lower()
+		return value
 
 
 class ImageField(SorlImageField):
-	def __init__(self, verbose_name=None, name=None, upload_to='', storage=None, **kwargs):
+#class ImageField(models.ImageField):
+	def __init__(self, verbose_name=None, name=None, upload_to=None, storage=None, **kwargs):
 		if not callable(upload_to):
 			upload_to = ImageField.path_and_rename(upload_to)
-		super(ImageField, self).__init__(verbose_name, name, upload_to, storage, **kwargs)
+		print upload_to
+		super(ImageField, self).__init__(verbose_name=verbose_name, name=name, upload_to=upload_to, storage=storage, **kwargs)
 
 	@staticmethod
 	def path_and_rename(path):

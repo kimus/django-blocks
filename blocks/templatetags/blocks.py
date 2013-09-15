@@ -18,7 +18,7 @@ def site_url(site_id):
 @register.filter
 def urlmatchwith(value, arg):
 	url = ''
-	if 'localeurl' in settings.INSTALLED_APPS:
+	if 'django.middleware.locale.LocaleMiddleware' in settings.MIDDLEWARE_CLASSES:
 		url = '/' + get_language()
 	url += arg
 	if arg == '/':

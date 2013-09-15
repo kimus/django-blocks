@@ -44,7 +44,6 @@ class ImageField(SorlImageField):
 	def __init__(self, verbose_name=None, name=None, upload_to=None, storage=None, **kwargs):
 		if not callable(upload_to):
 			upload_to = ImageField.path_and_rename(upload_to)
-		print upload_to
 		super(ImageField, self).__init__(verbose_name=verbose_name, name=name, upload_to=upload_to, storage=storage, **kwargs)
 
 	@staticmethod

@@ -64,8 +64,17 @@ class HiddenFormField(forms.IntegerField):
 		kwargs['widget'] = forms.HiddenInput
 		super(HiddenFormField, self).__init__(*args, **kwargs)
 
+
 class OrderField(models.PositiveSmallIntegerField):
 	def formfield(self, **kwargs):
 		defaults = {'form_class': HiddenFormField}
 		defaults.update(kwargs)
 		return super(OrderField, self).formfield(**defaults)
+
+try:
+	from south.modelsinspector import add_introspection_rules
+	add_introspection_rules([], ["^blocks\.fields\.SlugURLField"])
+	add_introspection_rules([], ["^blocks\.fields\.ImageField"])
+	add_introspection_rules([], ["^blocks\.fields\.OrderField"])
+except:
+	pass

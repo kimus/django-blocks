@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.options import ModelAdmin
 from django.conf import settings
+from django.forms.models import BaseInlineFormSet
 
 from tinymce.widgets import TinyMCE
 from mptt_tree.forms import MPTTTreeModelAdmin
@@ -58,10 +59,34 @@ class ImageStackedInline(AdminImageMixin, admin.StackedInline):
     pass
 
 
+class TranslationsInlineFormSet(BaseInlineFormSet):
+	def clean(self):
+		"""if only the default language is filled then copy default language to others"""
+		lastdata = None
+		for form in self.forms:
+			if not hasattr(form, 'cleaned_data'):
+				continue
+			data = form.cleaned_data
+			count = 0
+			for d in data:				
+				v = data[d]
+				if v != None and v != u'':
+					count += 1
+			if count <= 3 and lastdata != None:
+				for k in lastdata:
+					if k != 'master' and k != 'language_code' and k != 'id' and k != 'DELETE':
+						key = "%s-%s" % (form.prefix, k)
+						form.data[key] = lastdata.get(k)
+				form.full_clean()
+			else:
+				lastdata = data
+		super(TranslationsInlineFormSet, self).clean()
+
 class TranslationsInline(admin.StackedInline):
 	template = 'admin/blocks/edit_inline/translatable.html'
 	max_num = len(settings.LANGUAGES)
 	extra = len(settings.LANGUAGES)
+	formset = TranslationsInlineFormSet
 
 
 class MenuTranslationInline(TranslationsInline):

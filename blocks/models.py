@@ -82,8 +82,9 @@ class SiteRelated(History):
 		to ``True``.
 		"""
 		if update_site or not self.id:
+			super(SiteRelated, self).save(*args, **kwargs)
 			current_site = Site.objects.get_current()
-			self.site_id = current_site.id
+			self.sites.add(current_site)
 		super(SiteRelated, self).save(*args, **kwargs)
 
 

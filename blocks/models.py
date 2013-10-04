@@ -169,26 +169,43 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	def title_with_spacer(self, spacer=u'...'):
 		return (spacer * self.level) + u' ' + self.slug
 
+	def has_children(self):
+		return self.get_children().count() > 0
+
 	class Meta(MPTTModel.Meta):
 		verbose_name = _('menu')
 		verbose_name_plural = _('menus')
 
+	@staticmethod
+	def fix_url(menu):
+		if not is_absolute_url(menu.slug):
+			menu.url = '/'
+			if menu.parent:
+				menu.url += menu.parent.url[1:]
+			if menu.slug:
+				menu.url += menu.slug + '/'
+		else:			
+			menu.url = menu.slug		
+
 	def save(self, force_insert=False, force_update=False):
 		old_url = self.url
 
-		if not is_absolute_url(self.slug):
-			self.url = '/'
-			if self.parent:
-				self.url += self.parent.url[1:]
-			if self.slug:
-				self.url += self.slug + '/'
-		else:			
-			self.url = self.slug
+		Menu.fix_url(self)
 
 		super(Menu, self).save(force_insert, force_update)
 		Menu.objects.rebuild()
 
 		if self.url != old_url:
+			# fix menus
+			try:
+				qs = Menu.objects.filter(parent=self)
+				for m in qs:
+					Menu.fix_url(m)
+					m.save()
+			except Menu.DoesNotExist:
+				pass
+
+			# fix pages
 			try:
 				qs = Page.objects.filter(menu=old_url)
 				for p in qs:

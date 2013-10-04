@@ -209,6 +209,21 @@ class Template(History):
 	name = models.CharField(_('name'), max_length=80)
 	template = models.CharField(_('template'), max_length=200)
 
+	def __init__(self, *args, **kwargs):		
+		super(Template, self).__init__(*args, **kwargs)
+		self.old_template = self.template
+
+	def save(self, force_insert=False, force_update=False):
+		super(Template, self).save(force_insert, force_update)
+		if self.template != self.old_template:
+			try:
+				qs = Page.objects.filter(template_name=self.old_template)
+				for p in qs:
+					p.template_name = self.template
+					p.save()
+			except Page.DoesNotExist:
+				pass
+
 	def __unicode__(self):
 		return '%s' % self.name
 

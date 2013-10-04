@@ -7,6 +7,7 @@ from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 
+from .utils.urls import translate_url
 from .models import Page
 
 
@@ -24,10 +25,7 @@ def page(request, url, locale=False):
     if not url.startswith('/'):
         url = '/' + url
     site_id = get_current_site(request).id    
-    if locale and 'hvad' in settings.INSTALLED_APPS:
-        p = url.split('/')
-        p.pop(1)
-        url = '/'.join(p)
+    url = translate_url(url, locale)
     try:
         f = get_object_or_404(Page, url__exact=url, sites__id__exact=site_id)
     except Http404:
@@ -49,8 +47,8 @@ def render_page(request, f):
     #if f.registration_required and not request.user.is_authenticated():
     #    from django.contrib.auth.views import redirect_to_login
     #    return redirect_to_login(request.path)
-    if f.template_name:
-        t = loader.select_template((f.template_name, DEFAULT_TEMPLATE))
+    if f.template_name:        
+        t = loader.select_template((f.template_name, DEFAULT_TEMPLATE))        
     else:
         t = loader.get_template(DEFAULT_TEMPLATE)
 

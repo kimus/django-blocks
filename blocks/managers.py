@@ -1,7 +1,7 @@
 from django.db.models import Manager, Q
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.query import QuerySet
-from django.utils.translation import get_language
+from django.utils.translation import get_language, activate
 from django.conf import settings
 
 from hvad.manager import TranslationManager
@@ -17,6 +17,8 @@ def isvalidlanguage(lang):
 			break
 	return found
 
+if settings.LANGUAGE_CODE != get_language() and not isvalidlanguage(get_language()):
+	activate(settings.LANGUAGE_CODE)
 
 class BaseManager(TranslationManager):
 	def translated(self):

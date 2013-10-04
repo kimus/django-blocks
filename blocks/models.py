@@ -261,7 +261,6 @@ class Page(TranslatableModel, Publishable):
 	objects = PublishableManager()
 
 	class Meta:
-		unique_together = ('menu', 'is_relative')
 		ordering = ('url',)
 
 	@staticmethod

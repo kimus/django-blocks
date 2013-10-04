@@ -49,7 +49,7 @@ class PageForm(forms.ModelForm):
 			if same_url.exists():
 				raise forms.ValidationError(
 					_('Page with url %(url)s already exists for site %(site)s' %
-					  {'url': url, 'site': ''}))
+					  {'url': url, 'site': '(empty)'}))
 
 
 		return super(PageForm, self).clean()

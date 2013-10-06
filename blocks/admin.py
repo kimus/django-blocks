@@ -98,7 +98,11 @@ class MenuAdmin(MPTTTreeModelAdmin):
 
 	fieldsets = (
 		(None, {'fields': ('name', 'slug', 'parent', )}),
-		PUBLISHABLE_OPTIONS,
+		(
+		_('Publishing Options'), {
+			'fields': ('publish_date', 'expiry_date', 'type', 'keyword', 'status',), 
+			'classes': ('grp-collapse grp-closed', )
+		})
 	)
 	list_display = ('name', 'url', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['slug', 'url']
@@ -121,12 +125,12 @@ admin.site.register(Template, TemplateAdmin)
 def get_menus_choices():
 	def _get_next(item):
 		items = ()
-		for m in item.children.all():
+		for m in item.children.exclude(type=Menu.TYPE_DYNAMIC):
 			items += (( m.url, m.title_with_spacer(spacer=u'. . . ') ),)
 			items += _get_next(m)
 		return items
 	items = ()
-	menus = Menu.objects.filter(parent__isnull=True)
+	menus = Menu.objects.filter(parent__isnull=True).exclude(type=Menu.TYPE_DYNAMIC)
 	for m in menus:
 		items += (( m.url, m.title ),)
 		items += _get_next(m)

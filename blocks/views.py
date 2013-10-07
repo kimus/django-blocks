@@ -1,14 +1,13 @@
 from django.conf import settings
 from django.contrib.sites.models import get_current_site
 from django.core.xheaders import populate_xheaders
-from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
-from django.shortcuts import get_object_or_404
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
 
 from .utils.urls import translate_url
-from .models import Page
+from .models import Page, Menu
 
 
 DEFAULT_TEMPLATE = 'pages/default.html'
@@ -26,15 +25,35 @@ def page(request, url, locale=False):
         url = '/' + url
     site_id = get_current_site(request).id    
     url = translate_url(url, locale)
+
+    qs = Page.objects.published(request)
+
     try:
-        f = get_object_or_404(Page, url__exact=url, sites__id__exact=site_id)
-    except Http404:
+        f = qs.get(url__exact=url, is_relative=False, sites__id__exact=site_id)
+    except:
         if not url.endswith('/') and settings.APPEND_SLASH:
-            url += '/'
-            f = get_object_or_404(Page, url__exact=url, sites__id__exact=site_id)
-            return HttpResponsePermanentRedirect('%s/' % request.path)
+            try:
+                url += '/'
+                f = qs.get(url__exact=url, is_relative=False, sites__id__exact=site_id)
+                return HttpResponsePermanentRedirect('%s/' % request.path)
+            except:
+                pass
         else:
-            raise
+            # try and get relative page
+            try:
+                f = qs.filter(menu__exact=url, is_relative=True, sites__id__exact=site_id)[:1].get()
+                return HttpResponseRedirect(f.url)
+            except:
+                pass
+            
+            # try to get menu
+            try:
+                f = Menu.objects.filter(parent__url__exact=url)[:1].get()
+                return HttpResponseRedirect(f.url)
+            except:
+                pass
+            pass
+        raise Http404('No Static Page matches the given query.')
     return render_page(request, f)
 
 @csrf_protect

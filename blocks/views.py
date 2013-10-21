@@ -27,14 +27,13 @@ def page(request, url, locale=False):
     url = translate_url(url, locale)
 
     qs = Page.objects.published(request)
-
     try:
-        f = qs.get(url__exact=url, is_relative=False, sites__id__exact=site_id)
+        f = qs.get(url__exact=url, sites__id__exact=site_id)
     except:
         if not url.endswith('/') and settings.APPEND_SLASH:
             try:
                 url += '/'
-                f = qs.get(url__exact=url, is_relative=False, sites__id__exact=site_id)
+                f = qs.get(url__exact=url, sites__id__exact=site_id)
                 return HttpResponsePermanentRedirect('%s/' % request.path)
             except:
                 pass

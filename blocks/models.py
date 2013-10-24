@@ -283,6 +283,9 @@ class Page(TranslatableModel, Publishable):
 		self.url = Page.get_url(self.menu, self.is_relative, self.name)
 		super(Page, self).save(force_insert, force_update)
 
+	def __unicode__(self):
+		return u'%s -- %s' % (self.url, self.title)
+		
 	def __str__(self):
 		return "%s -- %s" % (self.url, self.name)
 

@@ -104,7 +104,7 @@ class MenuAdmin(MPTTTreeModelAdmin):
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
-	list_display = ('name', 'url', 'creation_user', 'lastchange_date', 'status')
+	list_display = ('type_image', 'indented_short_title', 'keyword', 'url', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['slug', 'url']
 	sortable = 'order'
 	mptt_level_indent = 20
@@ -159,7 +159,10 @@ class PageAdmin(ModelAdmin):
 
 	fieldsets = (
 		(None, {'fields': ('name', 'menu', 'is_relative', 'template_name')}),
-		PUBLISHABLE_OPTIONS,
+		(_('Publishing Options'), {
+			'fields': ('publish_date', 'expiry_date', 'order', 'status',), 
+			'classes': ('grp-collapse grp-closed', )
+		})
 	)
 	list_display = ('name', 'url', 'template_name', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['name', 'url']
@@ -167,11 +170,8 @@ class PageAdmin(ModelAdmin):
 	form = PageForm
 
 	def formfield_for_dbfield(self, db_field, **kwargs):
-		#if db_field.name == 'content':
-		#	return forms.CharField(widget=TinyMCE(
-		#		attrs={'cols': 80, 'rows': 30},
-		#		mce_attrs={'external_link_list_url': reverse('tinymce.views.flatpages_link_list')},
-		#	))
+		if db_field.name == 'order':
+			return forms.ChoiceField(choices=(('', ''),) + tuple((i, i) for i in range(0, 11)))
 		if db_field.name == 'template_name':
 			return forms.ChoiceField(choices=get_templates_choices())
 		return super(PageAdmin, self).formfield_for_dbfield(db_field, **kwargs)

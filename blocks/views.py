@@ -11,6 +11,7 @@ from .models import Page, Menu
 
 
 DEFAULT_TEMPLATE = 'pages/default.html'
+DEFAULT_LIST_TEMPLATE = 'pages/default_list.html'
 
 # This view is called from PageFallbackMiddleware.process_response
 # when a 404 is raised, which often means CsrfViewMiddleware.process_view
@@ -28,7 +29,7 @@ def page(request, url, locale=False):
 
     qs = Page.objects.published(request)
     try:
-        f = qs.get(url__exact=url, sites__id__exact=site_id)
+        f = qs.get(url__exact=url, sites__id__exact=site_id, is_relative=False)
     except:
         if not url.endswith('/') and settings.APPEND_SLASH:
             try:
@@ -38,6 +39,13 @@ def page(request, url, locale=False):
             except:
                 pass
         else:
+            # try to get dynamic menu
+            try:
+                m = Menu.objects.get(url__exact=url, type=Menu.TYPE_LIST)
+                return render_menu(request, m)
+            except Menu.DoesNotExist:
+                pass
+
             # try and get relative page
             try:
                 f = qs.filter(menu__exact=url, is_relative=True, sites__id__exact=site_id)[:1].get()
@@ -47,8 +55,8 @@ def page(request, url, locale=False):
             
             # try to get menu
             try:
-                f = Menu.objects.filter(parent__url__exact=url)[:1].get()
-                return HttpResponseRedirect(f.url)
+                m = Menu.objects.filter(parent__url__exact=url)[:1].get()
+                return HttpResponseRedirect(m.url)
             except:
                 pass
             pass
@@ -57,15 +65,12 @@ def page(request, url, locale=False):
 
 @csrf_protect
 def render_page(request, f):
-    """
-    Internal interface to the flat page view.
-    """
     # If registration is required for accessing this page, and the user isn't
     # logged in, redirect to the login page.
     #if f.registration_required and not request.user.is_authenticated():
     #    from django.contrib.auth.views import redirect_to_login
     #    return redirect_to_login(request.path)
-    if f.template_name:        
+    if f.template_name:
         t = loader.select_template((f.template_name, DEFAULT_TEMPLATE))        
     else:
         t = loader.get_template(DEFAULT_TEMPLATE)
@@ -81,6 +86,19 @@ def render_page(request, f):
     })
     response = HttpResponse(t.render(c))
     populate_xheaders(request, response, Page, f.id)
+    return response
+
+
+@csrf_protect
+def render_menu(request, m):
+    t = loader.get_template(DEFAULT_LIST_TEMPLATE)
+
+    c = RequestContext(request, {
+        'pages': Page.objects.filter(menu__exact=m.url),
+        'menu': m
+    })
+    response = HttpResponse(t.render(c))
+    populate_xheaders(request, response, Menu, m.id)
     return response
 
 

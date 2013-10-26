@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.utils.translation import get_language
 
+
 register = template.Library()
 
 
@@ -34,3 +35,27 @@ def startswith(value, arg):
 		return value.startswith(arg)
 	else:
 		return False
+
+
+@register.assignment_tag
+def blocks_menu(*args, **kwargs):
+	from ..models import Menu
+	slug = kwargs.get('slug')
+	keyword = kwargs.get('keyword')
+	
+	qs = None
+	if slug and keyword:
+		qs = Menu.objects.filter(slug=slug, keyword=keyword)
+	elif slug:
+		qs =  Menu.objects.filter(slug=slug)
+	elif keyword:
+		qs =  Menu.objects.filter(keyword=keyword)
+
+	if qs:
+		try:
+			menu = qs.get()			
+			return menu.get_menus()
+		except:
+			pass
+	
+	return Menu.objects.filter(parent__isnull=True).exclude(type=Menu.TYPE_HIDDEN).order_by('tree_id')

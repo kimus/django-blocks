@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from django.contrib.admin.models import LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
+from django.utils.safestring import mark_safe
 
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
@@ -155,14 +156,18 @@ class TranslatableMPTTModel(TranslatableModel, MPTTModel):
 class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	name = models.CharField(_('name'), max_length=200)
 	slug = SlugURLField(verbose_name=_('slug'), max_length=200, blank=True)
-	url = models.CharField(verbose_name=_('url'), max_length=200, unique=True, editable=False, db_index=True)
+	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True)
 	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 	
+	TYPE_HIDDEN = 0
 	TYPE_PAGE = 1
 	TYPE_DYNAMIC = 2
+	TYPE_LIST = 3
 	TYPE_CHOICES = (
 		(TYPE_PAGE, _("Page")),
 		(TYPE_DYNAMIC, _("Dynamic")),
+		(TYPE_LIST, _("List")),
+		(TYPE_HIDDEN, _("Hidden")),
 	)
 	type = models.IntegerField(_('type'), choices=TYPE_CHOICES, default=TYPE_PAGE)
 	keyword = models.CharField(_('keyword'), max_length=20, null=True, blank=True)
@@ -172,14 +177,22 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 		description = models.TextField(_('description'), max_length=200, blank=True)
 	)
 
+	def type_image(self):
+		return '<div class="blocks-icon blocks-type-%s" title="%s"></div>' % (self.get_type_display().lower(), self.get_type_display())
+	type_image.allow_tags = True
+	type_image.short_description = 'type'
+
 	def short_title(self):
 	    return self.name
 
 	def title_with_spacer(self, spacer=u'...'):
 		return (spacer * self.level) + u' ' + self.slug
 
+	def get_menus(self):
+		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('tree_id')
+
 	def has_children(self):
-		return self.get_children().count() > 0
+		return self.get_menus().count() > 0
 
 	class Meta(MPTTModel.Meta):
 		verbose_name = _('menu')
@@ -254,7 +267,7 @@ class Template(History):
 		return '%s' % self.name
 
 
-class Page(TranslatableModel, Publishable):
+class Page(TranslatableModel, Publishable, Orderable):
 	name = models.CharField(_('name'), max_length=200)
 	menu = models.CharField(_('url'), max_length=200)
 	url = models.CharField(verbose_name=_('url'), max_length=200, unique=True, editable=False, db_index=True)
@@ -270,7 +283,7 @@ class Page(TranslatableModel, Publishable):
 	objects = PublishableManager()
 
 	class Meta:
-		ordering = ('url',)
+		ordering = ['url','order',]
 
 	@staticmethod
 	def get_url(menu, is_relative, name):
@@ -291,3 +304,17 @@ class Page(TranslatableModel, Publishable):
 
 	def get_absolute_url(self):
 		return self.url
+
+	@property
+	def lead(self):
+		pos = self.content.find('</p>')
+		if pos != -1:
+			return mark_safe(self.content[:pos + 4])
+		return mark_safe(self.content)
+
+	@property
+	def body(self):
+		pos = self.content.find('</p>')
+		if pos != -1:
+			return mark_safe(self.content[pos + 4:])
+		return ''

@@ -32,29 +32,54 @@ def urlmatchwith(value, arg):
 def startswith(value, arg):
 	"""Usage, {% if value|startswith:"arg" %}"""
 	if isinstance(value, str) or isinstance(value, unicode):
+		print '%s.startswith(%s)' % (value, arg)
 		return value.startswith(arg)
 	else:
 		return False
 
 
-@register.assignment_tag
-def blocks_menu(*args, **kwargs):
+@register.assignment_tag(takes_context=True)
+def blocks_menu(context, *args, **kwargs):
 	from ..models import Menu
+	from ..utils.urls import translate_url
+
 	slug = kwargs.get('slug')
 	keyword = kwargs.get('keyword')
+	islist = kwargs.get('list', True)
 	
-	qs = None
+	menu = None
 	if slug and keyword:
-		qs = Menu.objects.filter(slug=slug, keyword=keyword)
+		menu = Menu.objects.get(slug=slug, keyword=keyword)
+	
 	elif slug:
-		qs =  Menu.objects.filter(slug=slug)
+		menu =  Menu.objects.get(slug=slug)
+	
 	elif keyword:
-		qs =  Menu.objects.filter(keyword=keyword)
+		if keyword == 'BLOCKS_ROOT' or keyword == 'BLOCKS_EXACT':
+			request = context.get('request')
+			url = translate_url(request.path)
+			try:
+				m = Menu.objects.published(request).get(url__exact=url)
+				parents = m.get_ancestors()
+				if len(parents) == 0:
+					root = m
+				else:
+					root = parents[0]
 
-	if qs:
+				print
+
+				if keyword == 'BLOCKS_ROOT':
+					menu = root
+				elif keyword == 'BLOCKS_EXACT':
+					menu = m
+			except:
+				pass
+		else:
+			menu =  Menu.objects.get(keyword=keyword)
+
+	if menu:
 		try:
-			menu = qs.get()			
-			return menu.get_menus()
+			return menu.get_menus() if islist else menu
 		except:
 			pass
 	

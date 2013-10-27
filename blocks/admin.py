@@ -104,7 +104,7 @@ class MenuAdmin(MPTTTreeModelAdmin):
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
-	list_display = ('type_image', 'indented_short_title', 'keyword', 'url', 'creation_user', 'lastchange_date', 'status')
+	list_display = ('actions_column', 'type_image', 'indented_short_title', 'keyword', 'url', 'creation_user', 'lastchange_date', 'status')
 	search_fields = ['slug', 'url']
 	sortable = 'order'
 	mptt_level_indent = 20
@@ -164,14 +164,15 @@ class PageAdmin(ModelAdmin):
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
-	list_display = ('name', 'url', 'template_name', 'creation_user', 'lastchange_date', 'status')
+	list_display = ('type_image', 'name', 'url', 'template_name', 'creation_user', 'lastchange_date', 'status')
+	list_display_links = ('name', )
 	search_fields = ['name', 'url']
 	actions = actions_published
-	form = PageForm
+	form = PageForm	
 
 	def formfield_for_dbfield(self, db_field, **kwargs):
 		if db_field.name == 'order':
-			return forms.ChoiceField(choices=(('', ''),) + tuple((i, i) for i in range(0, 11)))
+			return forms.ChoiceField(choices=(('', ''),) + tuple((i, i) for i in range(0, 11)), required=False, initial=0)
 		if db_field.name == 'template_name':
 			return forms.ChoiceField(choices=get_templates_choices())
 		return super(PageAdmin, self).formfield_for_dbfield(db_field, **kwargs)

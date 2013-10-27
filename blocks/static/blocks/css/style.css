@@ -12,7 +12,8 @@
 	margin-left: 5px;
 }
 
-.blocks-type-page
+.blocks-type-page,
+.blocks-page-relative
 {
 	background-position: 0 72px;
 }
@@ -22,7 +23,8 @@
 	background-position: 0 24px;
 }
 
-.blocks-type-list
+.blocks-type-list,
+.blocks-page-index
 {
 	background-position: 0 48px;
 }
@@ -34,7 +36,9 @@ a:hover .blocks-icon
 }
 
 a.blocks-type-page:hover,
-a:hover .blocks-type-page
+a:hover .blocks-type-page,
+a.blocks-page-relative:hover,
+a:hover .blocks-page-relative
 {
 	background-position: 24px 72px;
 }
@@ -46,7 +50,9 @@ a:hover .blocks-type-dynamic
 }
 
 a.blocks-type-list:hover,
-a:hover .blocks-type-list
+a:hover .blocks-type-list,
+a.blocks-page-index:hover,
+a:hover .blocks-page-index
 {
 	background-position: 24px 48px;
 }

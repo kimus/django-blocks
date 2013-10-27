@@ -90,7 +90,7 @@ class SiteRelated(History):
 
 
 class Orderable(models.Model):
-	order = OrderField(verbose_name='', db_index=True, default=0)
+	order = OrderField(verbose_name='', db_index=True, default=0, blank=True)
 
 	class Meta:
 		abstract = True
@@ -155,7 +155,7 @@ class TranslatableMPTTModel(TranslatableModel, MPTTModel):
 
 class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	name = models.CharField(_('name'), max_length=200)
-	slug = SlugURLField(verbose_name=_('slug'), max_length=200, blank=True)
+	slug = SlugURLField(verbose_name=_('slug'), max_length=200)
 	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True)
 	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 	
@@ -190,6 +190,9 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 
 	def get_menus(self):
 		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('tree_id')
+
+	def get_pages(self):
+		return Page.objects.published().filter(menu__exact=self.url, is_relative=True)
 
 	def has_children(self):
 		return self.get_menus().count() > 0
@@ -284,6 +287,17 @@ class Page(TranslatableModel, Publishable, Orderable):
 
 	class Meta:
 		ordering = ['url','order',]
+
+	def get_type_display(self):
+		if self.is_relative:
+			return 'Relative'
+		else:
+			return 'Index'
+
+	def type_image(self):
+		return '<div class="blocks-icon blocks-page-%s" title="%s"></div>' % (self.get_type_display().lower(), self.get_type_display())
+	type_image.allow_tags = True
+	type_image.short_description = 'type'
 
 	@staticmethod
 	def get_url(menu, is_relative, name):

@@ -48,34 +48,37 @@ def blocks_menu(context, *args, **kwargs):
 	islist = kwargs.get('list', True)
 	
 	menu = None
-	if slug and keyword:
-		menu = Menu.objects.get(slug=slug, keyword=keyword)
-	
-	elif slug:
-		menu =  Menu.objects.get(slug=slug)
-	
-	elif keyword:
-		if keyword == 'BLOCKS_ROOT' or keyword == 'BLOCKS_EXACT':
-			request = context.get('request')
-			url = translate_url(request.path)
-			try:
-				m = Menu.objects.published(request).get(url__exact=url)
-				parents = m.get_ancestors()
-				if len(parents) == 0:
-					root = m
-				else:
-					root = parents[0]
+	try:
+		if slug and keyword:
+			menu = Menu.objects.get(slug=slug, keyword=keyword)
+		
+		elif slug:
+			menu =  Menu.objects.get(slug=slug)
+		
+		elif keyword:
+			if keyword == 'BLOCKS_ROOT' or keyword == 'BLOCKS_EXACT':
+				request = context.get('request')
+				url = translate_url(request.path)
+				try:
+					m = Menu.objects.published(request).get(url__exact=url)
+					parents = m.get_ancestors()
+					if len(parents) == 0:
+						root = m
+					else:
+						root = parents[0]
 
-				print
+					print
 
-				if keyword == 'BLOCKS_ROOT':
-					menu = root
-				elif keyword == 'BLOCKS_EXACT':
-					menu = m
-			except:
-				pass
-		else:
-			menu =  Menu.objects.get(keyword=keyword)
+					if keyword == 'BLOCKS_ROOT':
+						menu = root
+					elif keyword == 'BLOCKS_EXACT':
+						menu = m
+				except:
+					pass
+			else:
+				menu =  Menu.objects.get(keyword=keyword)
+	except:
+		pass
 
 	if menu:
 		try:

@@ -29,7 +29,7 @@ def page(request, url, locale=False):
 
     qs = Page.objects.published(request)
     try:
-        f = qs.get(url__exact=url, sites__id__exact=site_id, is_relative=False)
+        f = qs.get(url__exact=url, sites__id__exact=site_id)
     except:
         if not url.endswith('/') and settings.APPEND_SLASH:
             try:

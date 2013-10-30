@@ -40,7 +40,7 @@ def startswith(value, arg):
 
 @register.assignment_tag(takes_context=True)
 def blocks_menu(context, *args, **kwargs):
-	from ..models import Menu
+	from ..models import Menu, Page
 	from ..utils.urls import translate_url
 
 	slug = kwargs.get('slug')
@@ -61,20 +61,24 @@ def blocks_menu(context, *args, **kwargs):
 				url = translate_url(request.path)
 				try:
 					m = Menu.objects.published(request).get(url__exact=url)
+				except:
+					try:
+						p = Page.objects.published(request).get(url__exact=url)
+						m = Menu.objects.published(request).get(url__exact=p.menu)
+					except Exception as e:
+						print e
+						pass
+				if m:
 					parents = m.get_ancestors()
 					if len(parents) == 0:
 						root = m
 					else:
 						root = parents[0]
 
-					print
-
 					if keyword == 'BLOCKS_ROOT':
 						menu = root
 					elif keyword == 'BLOCKS_EXACT':
 						menu = m
-				except:
-					pass
 			else:
 				menu =  Menu.objects.get(keyword=keyword)
 	except:

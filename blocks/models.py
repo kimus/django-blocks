@@ -194,8 +194,15 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	def get_pages(self):
 		return Page.objects.published().filter(menu__exact=self.url, is_relative=True)
 
+	def has_pages(self):
+		return self.get_pages().count() > 0
+
 	def has_children(self):
 		return self.get_menus().count() > 0
+
+	def has_children_or_pages(self):
+		return self.has_children() or self.has_pages()
+
 
 	class Meta(MPTTModel.Meta):
 		verbose_name = _('menu')

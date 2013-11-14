@@ -155,7 +155,7 @@ class TranslatableMPTTModel(TranslatableModel, MPTTModel):
 
 class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	name = models.CharField(_('name'), max_length=200)
-	slug = SlugURLField(verbose_name=_('slug'), max_length=200)
+	slug = SlugURLField(verbose_name=_('slug'), max_length=200, null=True, blank=True)
 	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True)
 	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 	

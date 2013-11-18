@@ -32,7 +32,6 @@ def urlmatchwith(value, arg):
 def startswith(value, arg):
 	"""Usage, {% if value|startswith:"arg" %}"""
 	if isinstance(value, str) or isinstance(value, unicode):
-		print '%s.startswith(%s)' % (value, arg)
 		return value.startswith(arg)
 	else:
 		return False

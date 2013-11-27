@@ -25,12 +25,10 @@ def page(request, url, locale=False):
     if not url.startswith('/'):
         url = '/' + url
     site_id = get_current_site(request).id
-    print '+++ URL: %s' % url
     url = translate_url(url, locale)
 
     qs = Page.objects.published(request)
     try:
-        print '+++ URL: %s' % url
         f = qs.get(url__exact=url, sites__id__exact=site_id)
     except:
         if not url.endswith('/') and settings.APPEND_SLASH:

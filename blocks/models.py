@@ -250,6 +250,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	def __unicode__(self):
 		return u'%s -- %s' % (self.url, self.title)
 
+	#@models.permalink
 	def get_absolute_url(self):
 		return self.url
 
@@ -323,8 +324,9 @@ class Page(TranslatableModel, Publishable, Orderable):
 	def __str__(self):
 		return "%s -- %s" % (self.url, self.name)
 
+	@models.permalink
 	def get_absolute_url(self):
-		return self.url
+		return ('blocks_page', (), {'url': self.url[1:] })
 
 	@property
 	def lead(self):

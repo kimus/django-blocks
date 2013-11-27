@@ -17,6 +17,8 @@ def is_absolute_url(url):
 def translate_url(url, locale=True):
     if locale and 'hvad' in settings.INSTALLED_APPS:
         p = url.split('/')
-        p.pop(1)
-        url = '/'.join(p)
+        l = p.pop(1)
+        langs = [i[0] for i in settings.LANGUAGES]
+        if l in langs:
+        	url = '/'.join(p)
     return url

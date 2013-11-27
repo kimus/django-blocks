@@ -189,7 +189,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 		return (spacer * self.level) + u' ' + self.slug
 
 	def get_menus(self):
-		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('tree_id')
+		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('lft')
 
 	def get_pages(self):
 		return Page.objects.published().filter(menu__exact=self.url, is_relative=True)
@@ -318,7 +318,7 @@ class Page(TranslatableModel, Publishable, Orderable):
 		super(Page, self).save(force_insert, force_update)
 
 	def __unicode__(self):
-		return u'%s -- %s' % (self.url, self.title)
+		return u'%s -- %s' % (self.url, self.name)
 		
 	def __str__(self):
 		return "%s -- %s" % (self.url, self.name)

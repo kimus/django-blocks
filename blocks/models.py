@@ -287,7 +287,7 @@ class Page(TranslatableModel, Publishable, Orderable):
 		help_text=_("If a page is relative then the page slug (normalized name) is appended to the url."))
 
 	translations = TranslatedFields(
-		title = models.CharField(_('title'), max_length=80),
+		title = models.CharField(_('title'), max_length=200),
 		content = models.TextField(_('content'), blank=True)
 	)
 

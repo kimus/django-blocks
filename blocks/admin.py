@@ -9,6 +9,7 @@ from django.forms.models import BaseInlineFormSet
 from tinymce.widgets import TinyMCE
 from mptt_tree.forms import MPTTTreeModelAdmin
 from sorl.thumbnail.admin import AdminImageMixin
+from datetime import datetime
 
 from .forms import PageForm
 from .models import Menu, MenuTranslation, Template, Page, PageTranslation
@@ -16,12 +17,12 @@ from .managers import PublishableManager
 
 
 def make_published(modeladmin, request, queryset):
-	queryset.update(status=PublishableManager.STATUS_PUBLISHED)
+	queryset.update(status=PublishableManager.STATUS_PUBLISHED, publish_date=datetime.now())
 make_published.short_description = _('Mark selected as Published')
 
 
 def make_unpublished(modeladmin, request, queryset):
-	queryset.update(status=PublishableManager.STATUS_DRAFT)
+	queryset.update(status=PublishableManager.STATUS_DRAFT, publish_date=None)
 make_unpublished.short_description = _('Mark selected as Unpublished (Draft)')
 
 
@@ -31,7 +32,7 @@ make_promoted.short_description = _('Mark selected as Promoted')
 
 
 def make_unpromoted(modeladmin, request, queryset):
-	queryset.update(promoted=True)
+	queryset.update(promoted=False)
 make_unpromoted.short_description = _('Mark selected as Unpromoted')
 
 
@@ -160,14 +161,14 @@ class PageAdmin(ModelAdmin):
 	fieldsets = (
 		(None, {'fields': ('name', 'menu', 'is_relative', 'template_name')}),
 		(_('Publishing Options'), {
-			'fields': ('publish_date', 'expiry_date', 'order', 'status',), 
+			'fields': ('publish_date', 'expiry_date', 'order', 'promoted', 'status',), 
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
-	list_display = ('type_image', 'name', 'url', 'template_name', 'creation_user', 'lastchange_date', 'status')
+	list_display = ('type_image', 'name', 'url', 'creation_user', 'lastchange_date', 'status', 'promoted')
 	list_display_links = ('name', )
 	search_fields = ['name', 'url']
-	actions = actions_published
+	actions = actions_promoted
 	form = PageForm	
 
 	def formfield_for_dbfield(self, db_field, **kwargs):

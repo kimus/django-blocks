@@ -139,6 +139,10 @@ class Publishable(SiteRelated):
 class Promotable(Publishable):
 	promoted = models.BooleanField(_('promoted'))
 
+	class Meta:
+		abstract = True
+
+
 
 class MultilingualTreeManager(TreeManager, PublishableManager):
 	pass
@@ -202,6 +206,13 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 
 	def has_children_or_pages(self):
 		return self.has_children() or self.has_pages()
+
+	def has_promotables(self):
+		return self.get_promotables().count() > 0
+
+	def get_promotables(self):
+		leafs = list(self.get_leafnodes().values_list('url', flat=True)) + [self.url,]
+		return Page.objects.filter(promoted=True, menu__in=leafs)
 
 
 	class Meta(MPTTModel.Meta):
@@ -278,7 +289,7 @@ class Template(History):
 		return '%s' % self.name
 
 
-class Page(TranslatableModel, Publishable, Orderable):
+class Page(TranslatableModel, Promotable, Orderable):
 	name = models.CharField(_('name'), max_length=200)
 	menu = models.CharField(_('url'), max_length=200)
 	url = models.CharField(verbose_name=_('url'), max_length=200, unique=True, editable=False, db_index=True)

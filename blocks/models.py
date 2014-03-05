@@ -288,6 +288,9 @@ class Template(History):
 	def __unicode__(self):
 		return '%s' % self.name
 
+	def __str__(self):
+		return '%s' % self.name
+
 
 class Page(TranslatableModel, Promotable, Orderable):
 	name = models.CharField(_('name'), max_length=200)
@@ -305,7 +308,7 @@ class Page(TranslatableModel, Promotable, Orderable):
 	objects = PublishableManager()
 
 	class Meta:
-		ordering = ['url','order',]
+		ordering = ['url', 'order', 'name']
 
 	def get_type_display(self):
 		if self.is_relative:

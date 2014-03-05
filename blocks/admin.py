@@ -168,6 +168,7 @@ class PageAdmin(ModelAdmin):
 	list_display = ('type_image', 'name', 'url', 'creation_user', 'lastchange_date', 'status', 'promoted')
 	list_display_links = ('name', )
 	search_fields = ['name', 'url']
+	list_filter = ('menu', 'template_name')
 	actions = actions_promoted
 	form = PageForm	
 

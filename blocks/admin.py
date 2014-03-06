@@ -174,7 +174,7 @@ class PageAdmin(ModelAdmin):
 
 	def formfield_for_dbfield(self, db_field, **kwargs):
 		if db_field.name == 'order':
-			return forms.ChoiceField(choices=(('', ''),) + tuple((i, i) for i in range(0, 21)), required=True, initial=0)
+			return forms.ChoiceField(choices=(('', ''),) + tuple((i, i) for i in range(0, 31)), required=True, initial=0)
 		if db_field.name == 'template_name':
 			return forms.ChoiceField(choices=get_templates_choices())
 		return super(PageAdmin, self).formfield_for_dbfield(db_field, **kwargs)

@@ -196,7 +196,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('lft')
 
 	def get_pages(self):
-		return Page.objects.published().filter(menu__exact=self.url, is_relative=True)
+		return Page.objects.published().filter(menu__exact=self.url, is_relative=True).order_by('order')
 
 	def has_pages(self):
 		return self.get_pages().count() > 0

@@ -98,10 +98,15 @@ def blocks_page(context, *args, **kwargs):
 	from ..models import Page
 	from ..utils.urls import translate_url
 
+	keyword = kwargs.get('keyword')
+
 	try:
-		request = context.get('request')
-		url = translate_url(request.path)
-		p = Page.objects.published(request).get(url__exact=url)
+		if keyword:
+			p = Page.objects.published(request).get(keyword=keyword)
+		else:
+			request = context.get('request')
+			url = translate_url(request.path)
+			p = Page.objects.published(request).get(url__exact=url)
 		return p
 	except:
 		pass

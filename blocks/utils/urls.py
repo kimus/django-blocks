@@ -28,7 +28,7 @@ def translate_url(url, locale=True):
     return url
 
 
-def get_menu_url(url, locale=True):
+def get_menu_absolute_url(url, locale=True):
 	if is_absolute_url(url):
 		return url
 	return '/%s%s' % (get_language(), url)

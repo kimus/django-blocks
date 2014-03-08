@@ -17,7 +17,7 @@ from hvad.models import TranslatableModel, TranslatedFields
 
 from .managers import BaseManager, PublishableManager
 from .utils.noconflict import classmaker
-from .utils.urls import is_absolute_url, get_menu_url
+from .utils.urls import is_absolute_url, get_menu_absolute_url
 from .fields import SlugURLField, OrderField
 
 
@@ -269,7 +269,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 
 	#@models.permalink
 	def get_absolute_url(self):
-		return get_menu_url(self.url)
+		return get_menu_absolute_url(self.url)
 
 
 class Template(History):

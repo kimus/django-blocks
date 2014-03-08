@@ -49,14 +49,14 @@ def page(request, url, locale=False):
             # try and get relative page
             try:
                 f = qs.filter(menu__exact=url, is_relative=True, sites__id__exact=site_id)[:1].get()
-                return HttpResponseRedirect(f.url)
+                return HttpResponseRedirect(f.get_absolute_url())
             except:
                 pass
             
             # try to get menu
             try:
                 m = Menu.objects.filter(parent__url__exact=url)[:1].get()
-                return HttpResponseRedirect(m.url)
+                return HttpResponseRedirect(m.get_absolute_url())
             except:
                 pass
             pass

@@ -17,7 +17,7 @@ from hvad.models import TranslatableModel, TranslatedFields
 
 from .managers import BaseManager, PublishableManager
 from .utils.noconflict import classmaker
-from .utils.urls import is_absolute_url
+from .utils.urls import is_absolute_url, get_menu_url
 from .fields import SlugURLField, OrderField
 
 
@@ -159,22 +159,27 @@ class TranslatableMPTTModel(TranslatableModel, MPTTModel):
 
 class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	name = models.CharField(_('name'), max_length=200)
-	slug = SlugURLField(verbose_name=_('slug'), max_length=200, null=True, blank=True)
-	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True)
+	slug = SlugURLField(verbose_name=_('slug'), max_length=200, null=True, blank=True,
+		help_text=_("This field is changed automatically by changing the name field. If you change the type to 'Redirect' you can put a relative or absolute URL."))
+	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True,
+		help_text=_("This field is changed automatically. Make sure that you know what you're doing by changing this field."))
 	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 	
 	TYPE_HIDDEN = 0
 	TYPE_PAGE = 1
 	TYPE_DYNAMIC = 2
 	TYPE_LIST = 3
+	TYPE_REDIRECT = 4
 	TYPE_CHOICES = (
 		(TYPE_PAGE, _("Page")),
 		(TYPE_DYNAMIC, _("Dynamic")),
 		(TYPE_LIST, _("List")),
 		(TYPE_HIDDEN, _("Hidden")),
+		(TYPE_REDIRECT, _("Redirect")),
 	)
 	type = models.IntegerField(_('type'), choices=TYPE_CHOICES, default=TYPE_PAGE)
-	keyword = models.CharField(_('keyword'), max_length=20, null=True, blank=True)
+	keyword = models.CharField(_('identifier'), max_length=20, null=True, blank=True,
+		help_text=_("This field is used to identify a menu with an unique identifier. Make sure that you know what you're doing by changing this field."))
 
 	translations = TranslatedFields(
 		title = models.CharField(_('title'), max_length=80),
@@ -221,13 +226,14 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 
 	@staticmethod
 	def fix_url(menu):
-		if not is_absolute_url(menu.slug):
+		if not is_absolute_url(menu.slug) and not menu.type == Menu.TYPE_REDIRECT:
 			menu.url = '/'
 			if menu.parent:
 				menu.url += menu.parent.url[1:]
 			if menu.slug:
 				menu.url += menu.slug + '/'
-		else:			
+
+		else:
 			menu.url = menu.slug		
 
 	def save(self, force_insert=False, force_update=False):
@@ -263,7 +269,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 
 	#@models.permalink
 	def get_absolute_url(self):
-		return self.url
+		return get_menu_url(self.url)
 
 
 class Template(History):
@@ -299,6 +305,9 @@ class Page(TranslatableModel, Promotable, Orderable):
 	template_name = models.CharField(_('template name'), max_length=70, blank=True)
 	is_relative = models.BooleanField(_('relative'),
 		help_text=_("If a page is relative then the page slug (normalized name) is appended to the url."))
+
+	keyword = models.CharField(_('identifier'), max_length=20, null=True, blank=True,
+		help_text=_("This field is used to identify a page with an unique identifier. Make sure that you know what you're doing by changing this field."))
 
 	translations = TranslatedFields(
 		title = models.CharField(_('title'), max_length=200),

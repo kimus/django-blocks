@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.utils.translation import get_language
 import urlparse
+
 
 def get_menu_url(keyword, default=None):
 	from blocks.models import Menu
@@ -11,8 +13,10 @@ def get_menu_url(keyword, default=None):
 			url = '/' + default + '/'
 	return url
 
+
 def is_absolute_url(url):
 	return bool(urlparse.urlparse(url).scheme)
+
 
 def translate_url(url, locale=True):
     if locale and 'hvad' in settings.INSTALLED_APPS:
@@ -22,3 +26,9 @@ def translate_url(url, locale=True):
         if l in langs:
         	url = '/'.join(p)
     return url
+
+
+def get_menu_url(url, locale=True):
+	if is_absolute_url(url):
+		return url
+	return '/%s%s' % (get_language(), url)

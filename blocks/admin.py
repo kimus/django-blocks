@@ -105,8 +105,9 @@ class MenuAdmin(MPTTTreeModelAdmin):
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
-	list_display = ('actions_column', 'type_image', 'indented_short_title', 'keyword', 'url', 'creation_user', 'lastchange_date', 'status')
-	search_fields = ['slug', 'url']
+	list_display = ('actions_column', 'type_image', 'indented_short_title', 'url', 'creation_user', 'lastchange_date', 'status')
+	search_fields = ['name', 'slug', 'keyword']
+	list_filter = ('type', 'status', 'keyword')
 	sortable = 'order'
 	mptt_level_indent = 20
 	#indented_short_title = _('name')
@@ -126,12 +127,12 @@ admin.site.register(Template, TemplateAdmin)
 def get_menus_choices():
 	def _get_next(item):
 		items = ()
-		for m in item.children.exclude(type=Menu.TYPE_DYNAMIC):
+		for m in item.children.exclude(type__in=[Menu.TYPE_DYNAMIC, Menu.TYPE_REDIRECT]):
 			items += (( m.url, m.title_with_spacer(spacer=u'. . . ') ),)
 			items += _get_next(m)
 		return items
 	items = ()
-	menus = Menu.objects.filter(parent__isnull=True).exclude(type=Menu.TYPE_DYNAMIC)
+	menus = Menu.objects.filter(parent__isnull=True).exclude(type__in=[Menu.TYPE_DYNAMIC, Menu.TYPE_REDIRECT])
 	for m in menus:
 		items += (( m.url, m.title ),)
 		items += _get_next(m)
@@ -161,14 +162,14 @@ class PageAdmin(ModelAdmin):
 	fieldsets = (
 		(None, {'fields': ('name', 'menu', 'is_relative', 'template_name')}),
 		(_('Publishing Options'), {
-			'fields': ('publish_date', 'expiry_date', 'order', 'promoted', 'status',), 
+			'fields': ('publish_date', 'expiry_date', 'keyword', 'order', 'promoted', 'status',), 
 			'classes': ('grp-collapse grp-closed', )
 		})
 	)
 	list_display = ('type_image', 'name', 'url', 'creation_user', 'lastchange_date', 'status', 'promoted')
 	list_display_links = ('name', )
-	search_fields = ['name', 'url']
-	list_filter = ('menu', 'template_name')
+	search_fields = ['name', 'url', 'keyword']
+	list_filter = ('status', 'promoted', 'keyword', 'template_name')
 	actions = actions_promoted
 	form = PageForm	
 

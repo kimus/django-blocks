@@ -15,7 +15,7 @@ class SlugURLValidator(object):
 	message = _("Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens.")
 	code = 'invalid'
 
-	def __init__(self, arg1):
+	def __init__(self):
 		pass
 
 	def __call__(self, value):
@@ -26,9 +26,20 @@ class SlugURLValidator(object):
 		except ValueError:
 			pass
 
+blocks_validator_slug = SlugURLValidator()
 
 class SlugURLField(models.CharField):
-	default_validators = [SlugURLValidator(None)]
+	default_validators = [blocks_validator_slug]
+
+	def validate(self, value, model_instance):
+		from .models import Menu
+
+		if isinstance(model_instance, Menu):
+			self.validators = []
+			if model_instance.type != Menu.TYPE_REDIRECT:
+				self.validators.append(blocks_validator_slug)
+
+		super(SlugURLField, self).validate(value, model_instance)
 
 	def to_python(self, value):
 		value = super(SlugURLField, self).to_python(value)

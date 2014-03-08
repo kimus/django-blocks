@@ -90,3 +90,18 @@ def blocks_menu(context, *args, **kwargs):
 			pass
 	
 	return Menu.objects.filter(parent__isnull=True).exclude(type=Menu.TYPE_HIDDEN).order_by('tree_id')
+
+
+
+@register.assignment_tag(takes_context=True)
+def blocks_page(context, *args, **kwargs):
+	from ..models import Page
+	from ..utils.urls import translate_url
+
+	try:
+		request = context.get('request')
+		url = translate_url(request.path)
+		p = Page.objects.published(request).get(url__exact=url)
+		return p
+	except:
+		pass

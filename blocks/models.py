@@ -13,7 +13,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
 
 from hvad.models import TranslatableModel, TranslatedFields
-#from hvad.manager import TranslationManager
+from hvad.manager import TranslationManager
 
 from .managers import BaseManager, PublishableManager
 from .utils.noconflict import classmaker

@@ -216,7 +216,9 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 		return self.get_promotables().count() > 0
 
 	def get_promotables(self):
-		leafs = list(self.get_leafnodes().values_list('url', flat=True)) + [self.url,]
+		leafs = list(self.get_leafnodes().values_list('url', flat=True)) + \
+				list(self.get_children().values_list('url', flat=True)) + \
+				[self.url,]
 		return Page.objects.filter(promoted=True, menu__in=leafs)
 
 

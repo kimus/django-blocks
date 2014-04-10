@@ -68,13 +68,12 @@ def blocks_menu(context, *args, **kwargs):
 						print e
 						pass
 				if m:
-					parents = m.get_ancestors()
-					if len(parents) == 0:
-						root = m
-					else:
-						root = parents[0]
-
 					if keyword == 'BLOCKS_ROOT':
+						parents = m.get_ancestors()
+						if len(parents) == 0:
+							root = m
+						else:
+							root = parents[0]
 						menu = root
 					elif keyword == 'BLOCKS_EXACT':
 						menu = m

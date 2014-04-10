@@ -200,6 +200,14 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	def get_menus(self):
 		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('lft')
 
+	def get_page(self):
+		p = None
+		try:
+			p = Page.objects.published().get(menu__exact=self.url, is_relative=False)
+		except Page.DoesNotExist:
+			pass
+		return p
+
 	def get_pages(self):
 		return Page.objects.published().filter(menu__exact=self.url, is_relative=True).order_by('order')
 
@@ -366,3 +374,11 @@ class Page(TranslatableModel, Promotable, Orderable):
 		if pos != -1:
 			return mark_safe(self.content[pos + 4:])
 		return ''
+
+	def get_image(self):
+		if self.has_images():
+			return self.images.all()[:1].get()
+		return None
+
+	def has_images(self):
+		return hasattr(self, 'images') and self.images.count() > 0

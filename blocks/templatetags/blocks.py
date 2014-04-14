@@ -59,11 +59,11 @@ def blocks_menu(context, *args, **kwargs):
 				request = context.get('request')
 				url = translate_url(request.path)
 				try:
-					m = Menu.objects.published(request).get(url__exact=url)
+					m = Menu.objects.published(request).exclude(type=Menu.TYPE_REDIRECT).get(url__exact=url)
 				except:
 					try:
-						p = Page.objects.published(request).get(url__exact=url)
-						m = Menu.objects.published(request).get(url__exact=p.menu)
+						p = Page.objects.published(request).exclude(type=Menu.TYPE_REDIRECT).get(url__exact=url)
+						m = Menu.objects.published(request).exclude(type=Menu.TYPE_REDIRECT).get(url__exact=p.menu)
 					except Exception as e:
 						print e
 						pass

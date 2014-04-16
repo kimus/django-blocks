@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.sites.models import get_current_site
-from django.core.xheaders import populate_xheaders
+#from django.core.xheaders import populate_xheaders
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template import loader, RequestContext
 from django.utils.safestring import mark_safe
@@ -85,7 +85,7 @@ def render_page(request, f):
         'page': f,
     })
     response = HttpResponse(t.render(c))
-    populate_xheaders(request, response, Page, f.id)
+    #populate_xheaders(request, response, Page, f.id)
     return response
 
 
@@ -98,7 +98,7 @@ def render_menu(request, m):
         'menu': m
     })
     response = HttpResponse(t.render(c))
-    populate_xheaders(request, response, Menu, m.id)
+    #populate_xheaders(request, response, Menu, m.id)
     return response
 
 

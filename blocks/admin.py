@@ -127,7 +127,7 @@ admin.site.register(Template, TemplateAdmin)
 def get_menus_choices():
 	def _get_next(item):
 		items = ()
-		for m in item.children.exclude(type__in=[Menu.TYPE_DYNAMIC, Menu.TYPE_REDIRECT]):
+		for m in item.children.exclude(type__in=[Menu.TYPE_REDIRECT,]):
 			items += (( m.url, m.title_with_spacer(spacer=u'. . . ') ),)
 			items += _get_next(m)
 		return items

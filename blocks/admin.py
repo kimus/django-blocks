@@ -132,7 +132,7 @@ def get_menus_choices():
 			items += _get_next(m)
 		return items
 	items = ()
-	menus = Menu.objects.filter(parent__isnull=True).exclude(type__in=[Menu.TYPE_DYNAMIC, Menu.TYPE_REDIRECT])
+	menus = Menu.objects.filter(parent__isnull=True).exclude(type__in=[Menu.TYPE_REDIRECT])
 	for m in menus:
 		items += (( m.url, m.title ),)
 		items += _get_next(m)

@@ -195,7 +195,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	    return self.name
 
 	def title_with_spacer(self, spacer=u'...'):
-		return (spacer * self.level) + u' ' + self.slug
+		return (spacer * self.level) + u' ' + self.name
 
 	def get_menus(self):
 		return self.get_children().exclude(type=Menu.TYPE_HIDDEN).order_by('lft')
@@ -275,7 +275,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 				pass
 
 	def __unicode__(self):
-		return u'%s -- %s' % (self.url, self.title)
+		return u'%s' % self.title
 
 	#@models.permalink
 	def get_absolute_url(self):

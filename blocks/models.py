@@ -194,7 +194,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 	def short_title(self):
 	    return self.name
 
-	def title_with_spacer(self, spacer=u'...'):
+	def title_with_spacer(self, spacer=u'. . .'):
 		return (spacer * self.level) + u' ' + self.name
 
 	def get_menus(self):

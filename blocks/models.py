@@ -275,7 +275,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 				pass
 
 	def __unicode__(self):
-		return u'%s' % self.title
+		return u'%s' % self.name
 
 	#@models.permalink
 	def get_absolute_url(self):

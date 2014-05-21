@@ -163,7 +163,7 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 		help_text=_("This field is changed automatically by changing the name field. If you change the type to 'Redirect' you can put a relative or absolute URL."))
 	url = models.CharField(verbose_name=_('url'), max_length=200, editable=False, db_index=True,
 		help_text=_("This field is changed automatically. Make sure that you know what you're doing by changing this field."))
-	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', level_indicator=u'. . . ', null=True, blank=True)	
+	parent = TreeForeignKey('self', verbose_name=_('parent menu'), related_name='children', null=True, blank=True)	
 	
 	TYPE_HIDDEN = 0
 	TYPE_PAGE = 1

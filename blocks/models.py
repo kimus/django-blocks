@@ -264,15 +264,16 @@ class Menu(TranslatableMPTTModel, Publishable, OrderableMPTTM):
 			except Menu.DoesNotExist:
 				pass
 
-			# fix pages
-			try:
-				qs = Page.objects.filter(menu=old_url)
-				for p in qs:
-					p.menu = self.url
-					p.url = Page.get_url(self.url, p.is_relative, p.name)
-					p.save()
-			except Page.DoesNotExist:
-				pass
+			if self.type != Menu.TYPE_REDIRECT:
+				# fix pages
+				try:
+					qs = Page.objects.filter(menu=old_url)
+					for p in qs:
+						p.menu = self.url
+						p.url = Page.get_url(self.url, p.is_relative, p.name)
+						p.save()
+				except Page.DoesNotExist:
+					pass
 
 	def __unicode__(self):
 		return u'%s' % self.name

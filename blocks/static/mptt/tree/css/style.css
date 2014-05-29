@@ -1,0 +1,77 @@
+.drag_handle {
+    width: 16px;
+    height: 16px;
+    background: url(../img/arrow-move.png);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.drag_handle:hover {
+    cursor: move;
+}
+
+.drag_order img {
+    cursor: move;
+}
+
+table tr.dragging {
+    opacity: .3;
+}
+
+table tr.dragging td {
+    color: #333;
+}
+
+table tr.folded {
+    background: red;
+}
+
+div#drag_line {
+    position: relative;
+    height: 3px;
+    font-size: 0px;
+    background-color: #666;
+}
+
+.page_marker.children {
+    background: url(../img/disclosure-down.png) no-repeat right top;
+}
+
+.page_marker.closed {
+    background: url(../img/disclosure-right.png) no-repeat right top;
+}
+
+tr.non-editable a:link, tr.non-editable a:visited, tr.non-editable td {
+    color: #AAA;
+}
+
+
+tr.item_inactive {
+    color: rgb(221, 17, 68);
+}
+
+tr.item_inactive th a {
+    color: rgb(221, 17, 68);
+}
+
+.page_marker { display:block; text-align: right; float: left; padding: 1px 1px 0 0; }
+tr.cut { border: 2px dashed black; opacity: 0.5; }
+.title-column { width: 400px; }
+
+table#result_list :focus { background-color: #ccddff !important; outline: 0px; }
+
+#page_form {
+    clear: both;
+}
+
+div.order-machine div.inline-related > h3{
+    display: none;
+}
+
+.hidden-form-row{
+    display: none;
+}
+
+
+/* various overrides */
+#id_redirect_to { width: 20em; } /* raw_id_fields act-a-like for redirect_to */

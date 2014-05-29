@@ -7,11 +7,10 @@ from django.conf import settings
 from django.forms.models import BaseInlineFormSet
 
 from tinymce.widgets import TinyMCE
-from mptt_tree.forms import MPTTTreeModelAdmin
 from sorl.thumbnail.admin import AdminImageMixin
 from datetime import datetime
 
-from .forms import PageForm
+from .forms import PageForm, MPTTTreeModelAdmin
 from .models import Menu, MenuTranslation, Template, Page, PageTranslation
 from .managers import PublishableManager
 

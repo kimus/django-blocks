@@ -1,0 +1,70 @@
+.blocks-icon 
+{
+	background: url(../img/icons.png);
+	width: 24px;
+	height: 24px;
+	margin: -5px 0;
+	background-position: 0 0;
+}
+
+.drag_handle
+{
+	margin-left: 5px;
+}
+
+.blocks-type-page,
+.blocks-page-relative
+{
+	background-position: 0 96px;
+}
+
+.blocks-type-list,
+.blocks-page-index
+{
+	background-position: 0 72px;
+}
+
+.blocks-type-dynamic
+{
+	background-position: 0 48px;
+}
+
+.blocks-type-redirect
+{
+	background-position: 0 24px;
+}
+
+
+a.blocks-icon:hover,
+a:hover .blocks-icon
+{
+	background-position: 24px 0;
+}
+
+a.blocks-type-page:hover,
+a:hover .blocks-type-page,
+a.blocks-page-relative:hover,
+a:hover .blocks-page-relative
+{
+	background-position: 24px 96px;
+}
+
+a.blocks-type-list:hover,
+a:hover .blocks-type-list,
+a.blocks-page-index:hover,
+a:hover .blocks-page-index
+{
+	background-position: 24px 72px;
+}
+
+a.blocks-type-dynamic:hover,
+a:hover .blocks-type-dynamic
+{
+	background-position: 24px 48px;
+}
+
+a.blocks-type-redirect:hover,
+a:hover .blocks-type-redirect
+{
+	background-position: 24px 24px;
+}

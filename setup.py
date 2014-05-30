@@ -23,7 +23,7 @@ setup(
 	license = "MIT License",
 	url = "https://github.com/kimus/django-blocks",
 
-	platform="any",
+	platforms="any",
 
 	classifiers = [
 		'Environment :: Web Environment',

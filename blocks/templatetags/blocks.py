@@ -101,11 +101,11 @@ def blocks_page(context, *args, **kwargs):
 	islist = kwargs.get('list', False)
 
 	try:
+		request = context.get('request')
 		if keyword:
 			p = Page.objects.published(request).filter(keyword=keyword)
 			return p if islist else p.get()
 		elif not islist:
-			request = context.get('request')
 			url = translate_url(request.path)
 			return Page.objects.published(request).get(url__exact=url)
 	except:

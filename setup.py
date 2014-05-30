@@ -1,12 +1,17 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
+import os
+from setuptools import setup
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 
 setup(
 	name = "django-blocks",
 	version = "1.0",
 
-	packages = find_packages(),
+	packages = ['blocks'],
+	include_package_data=True,
 
 	author = "Helder Rossa",
 	author_email = "kimus.linuxus@gmail.com",
@@ -14,7 +19,7 @@ setup(
 	license = "MIT License",
 	url = "https://github.com/kimus/django-blocks",
 
-	classifiers = ['Development Status :: 4 - Beta',
+	classifiers = [
 		'Environment :: Web Environment',
 		'Framework :: Django',
 		'Intended Audience :: Developers',

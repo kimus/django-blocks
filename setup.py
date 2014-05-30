@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
@@ -12,14 +12,14 @@ setup(
 	name = "django-blocks",
 	version = "1.0",
 
-	packages = ['blocks'],
+	packages = find_packages(),
 	include_package_data=True,
 
 	author = "Helder Rossa",
 	author_email = "kimus.linuxus@gmail.com",
 	description = "An easier way to build Web apps more quickly and with almost no code.",
 	long_description=README,
-	
+
 	license = "MIT License",
 	url = "https://github.com/kimus/django-blocks",
 

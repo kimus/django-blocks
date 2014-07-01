@@ -38,7 +38,7 @@ class BaseManager(TranslationManager):
 class PublishableManager(BaseManager):
 
 	STATUS_DRAFT = 1
-	STATUS_PUBLISHED = 2,
+	STATUS_PUBLISHED = 2
 	STATUS_DISABLED = 3
 	STATUS_CHOICES = (
 		(STATUS_DRAFT, _("Draft")),

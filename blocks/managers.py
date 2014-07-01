@@ -38,15 +38,17 @@ class BaseManager(TranslationManager):
 class PublishableManager(BaseManager):
 
 	STATUS_DRAFT = 1
-	STATUS_PUBLISHED = 2
+	STATUS_PUBLISHED = 2,
+	STATUS_DISABLED = 3
 	STATUS_CHOICES = (
 		(STATUS_DRAFT, _("Draft")),
 		(STATUS_PUBLISHED, _("Published")),
+		(STATUS_DISABLED, _("Disabled")),
 	)
 
 	def published(self, request=None):
 		# allow staff users to preview pages
-		allow_unpublished  = (request and request.user.is_authenticated() and request.user.is_staff)	
+		allow_unpublished  = (request and hasattr(request, 'user') and request.user.is_authenticated() and request.user.is_staff)	
 		if allow_unpublished:
 			return self.translated()
 		else:

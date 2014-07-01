@@ -19,13 +19,14 @@ def is_absolute_url(url):
 
 
 def translate_url(url, locale=True):
-    if locale and 'hvad' in settings.INSTALLED_APPS:
-        p = url.split('/')
-        l = p.pop(1)
-        langs = [i[0] for i in settings.LANGUAGES]
-        if l in langs:
-        	url = '/'.join(p)
-    return url
+	if locale and 'hvad' in settings.INSTALLED_APPS:
+		p = url.split('/')
+		if len(p) > 1:
+			l = p.pop(1)
+			langs = [i[0] for i in settings.LANGUAGES]
+			if l in langs:
+				url = '/'.join(p)
+	return url
 
 
 def get_menu_absolute_url(url, locale=True):

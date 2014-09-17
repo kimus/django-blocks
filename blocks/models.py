@@ -137,7 +137,7 @@ class Publishable(SiteRelated):
 
 
 class Promotable(Publishable):
-	promoted = models.BooleanField(_('promoted'))
+	promoted = models.BooleanField(_('promoted'), default=False)
 
 	class Meta:
 		abstract = True
